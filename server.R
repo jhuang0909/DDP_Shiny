@@ -32,7 +32,7 @@ shinyServer(function(input, output) {
                         maxRatings <- presidents.df.subset[which(presidents.df.subset$rating == 
                                         max(presidents.df.subset$rating, na.rm = TRUE)),]
                         xlab <- "Year"
-                        ylab <- ifelse(input$show_ylab, "Approval Ratings", "")
+                        ylab <- "Approval Ratings"
                         plot_ly(data = presidents.df.subset, x = ~date, showlegend = FALSE) %>% 
                                 layout(yaxis = list(title = ylab), 
                                        xaxis = list(title = xlab)) %>%
