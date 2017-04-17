@@ -17,9 +17,8 @@ shinyUI(fluidPage(
         
         sidebarLayout(
                 sidebarPanel(
-                        maxRange <- c(as.Date("1945-01-01"), as.Date("1974-10-01")),
                         sliderInput("sliderYear", "Pick Minimum and Maximum Dates",
-                                    maxRange[1], maxRange[2], value = maxRange, timeFormat = "%Y", step = 100),
+                                    as.Date("1945-01-01"), as.Date("1974-10-01"), value = c(as.Date("1945-01-01"), as.Date("1974-10-01")), timeFormat = "%Y", step = 100),
                         checkboxInput("show_aveRating", "Show/Hide Average Rating", value = TRUE),
                         textOutput("aveRating")
                         ),
