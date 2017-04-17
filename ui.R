@@ -13,8 +13,6 @@ shinyUI(fluidPage(
         
         titlePanel("Plot Quarterly Approval Ratings of US Presidents"),
         
-        fluidRow("This Shiny application demonstrates the approval ratings of US predisents between 1945 and 1975.  The raw data is from the R Datasets Package.  Using the slidebar, you may choose any date range between 1945 and 1975.  The Shiny server will automatically show the rating trace for the given range in a Plotly plot, the min and max are also marked.  The average rating may be shown in a text box based on whether Show/Hide checkbox is checked."),
-        
         sidebarLayout(
                 sidebarPanel(
                         sliderInput("sliderYear", "Pick Minimum and Maximum Dates",
@@ -23,7 +21,8 @@ shinyUI(fluidPage(
                         textOutput("aveRating")
                         ),
                 mainPanel(
-                        plotlyOutput("plot1")
+                        wellPanel(plotlyOutput("plot1")),
+                        wellPanel(h4('README'),p('This Shiny application demonstrates the approval ratings of US predisents between 1945 and 1975.  The raw data is from the R Datasets Package.  Using the slidebar, you may choose any date range between 1945 and 1975.  The Shiny server will automatically show the rating trace for the given range in a Plotly plot, the min and max are also marked.  The average rating may be shown in a text box based on whether Show/Hide checkbox is checked.'))
                 )
         )
 ))
