@@ -56,7 +56,7 @@ renderText({
 })
 
 ```
-Move to the nexe slide to see a plot. 
+Move to the next slide to see a plot. 
 
 ## Trend of Approval Ratings
 
