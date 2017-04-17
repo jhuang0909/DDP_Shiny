@@ -1,0 +1,95 @@
+---
+title: "Approval Ratings of US Presidents (1945 ~ 1975)"
+author: "Jin Huang"
+date: "April 16, 2017"
+output: ioslides_presentation
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+library(shiny)
+library(plotly)
+library(zoo)
+```
+
+## Background
+
+This R Markdown presentation is made interactive using Shiny. It demonstrates the approval ratings of US predisents between 1945 and 1975.  The raw data is from the R Datasets Package.  Using the slidebar, you may choose any date range between 1945 and 1975.  The Shiny server will automatically show the rating trace for the given range in a Plotly plot, the min and max are also marked. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Select Date Range
+
+```{r selectDateRange}
+inputPanel(
+        sliderInput("sliderYear", "Pick Minimum and Maximum Dates",
+                    as.Date("1945-01-01"), as.Date("1974-10-01"), 
+                    value = c(as.Date("1945-01-01"), as.Date("1974-10-01")), timeFormat = "%Y", step = 100),
+        checkboxInput("show_aveRating", "Show/Hide Average Rating", value = TRUE),
+        textOutput("aveRating")
+)
+
+presidents <- get("presidents", "package:datasets")
+presidents.df <- data.frame(rating=as.matrix(presidents), date=as.Date(time(presidents)))
+getSubset <- function(minY, maxY) {
+        # Need to cover at least two valid ratings
+        subset <- presidents.df %>% filter(date >= minY & date <= maxY & !is.na(rating))
+        return(subset)
+} 
+
+dfSubset <- reactive({
+        minY <- input$sliderYear[1]
+        maxY <- input$sliderYear[2]
+        subset <- getSubset(minY, maxY)
+        validate(
+                need(nrow(subset) > 0, "Please select a valid time range")
+        )
+        return(subset)
+})
+
+renderText({ 
+        if(input$show_aveRating) {
+                presidents.df.subset <- dfSubset()
+                paste0("Average Rating = ", sprintf("%.2f",mean(presidents.df.subset$rating, na.rm = TRUE)))
+        }
+})
+
+```
+Move to the nexe slide to see a plot. 
+
+## Trend of Approval Ratings
+
+```{r plotlyPlot}
+renderPlotly({
+        presidents.df.subset <- dfSubset()
+        
+        minRatings <- presidents.df.subset[which(presidents.df.subset$rating == 
+                                                         min(presidents.df.subset$rating, na.rm = TRUE)),]
+        maxRatings <- presidents.df.subset[which(presidents.df.subset$rating == 
+                                                         max(presidents.df.subset$rating, na.rm = TRUE)),]
+        xlab <- "Year"
+        ylab <- "Approval Ratings"
+        plot_ly(data = presidents.df.subset, x = ~date, showlegend = FALSE) %>% 
+                layout(yaxis = list(title = ylab), 
+                       xaxis = list(title = xlab)) %>%
+                add_lines(y = ~rating, 
+                          name = "",
+                          line = list(color = "#00526d", width = 4)) %>%
+                add_markers(x = minRatings$date,
+                            y = minRatings$rating,
+                            name = "Minimum Rating",
+                            marker = list(size = 15, color = "#f44141")) %>%
+                add_markers(x = maxRatings$date,
+                            y = maxRatings$rating,
+                            name = "Maximum Rating",
+                            marker = list(size = 15, color = "#42f445"))
+})
+```
+
+## Conclusions
+
+- R Markdown has been extended to support fully interactive documents. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the parameters underlying your analysis and see the results immediately.
+- R Markdown leverages Shiny at its core to make this possible. 
+- In this example, we demonstrate how to leverage Shiny, R Markdown and Plotly to explore approval ratings of US Presidents between 1945 and 1975.
+
